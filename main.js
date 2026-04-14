@@ -3,6 +3,28 @@
   var SUPABASE_URL = cfg.url || "";
   var SUPABASE_ANON_KEY = cfg.anonKey || "";
 
+  /* In-app browsers (e.g. Threads) sometimes report a wide layout width while the visible
+   * area is narrow. Use the smallest of visual/layout widths so the hero stays stacked when needed. */
+  function syncLayoutCompact() {
+    var root = document.documentElement;
+    var vv = window.visualViewport;
+    var vw =
+      vv && typeof vv.width === "number" && vv.width > 0 ? vv.width : window.innerWidth || 0;
+    var iw = window.innerWidth || vw;
+    var cw = root.clientWidth || iw;
+    var smallest = Math.min(vw, iw, cw);
+    if (smallest > 0) {
+      root.classList.toggle("layout-compact", smallest < 720);
+    }
+  }
+  syncLayoutCompact();
+  window.addEventListener("resize", syncLayoutCompact, { passive: true });
+  window.addEventListener("orientationchange", syncLayoutCompact, { passive: true });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", syncLayoutCompact, { passive: true });
+    window.visualViewport.addEventListener("scroll", syncLayoutCompact, { passive: true });
+  }
+
   var header = document.getElementById("header");
   if (header) {
     function onScroll() {
