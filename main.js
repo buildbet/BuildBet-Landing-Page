@@ -51,4 +51,25 @@
     }
     document.body.removeChild(ta);
   }
+
+  var waitlistForm = document.getElementById("hero-waitlist-form");
+  if (waitlistForm) {
+    waitlistForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var input = document.getElementById("waitlist-email");
+      if (!input) return;
+      if (!input.checkValidity()) {
+        input.reportValidity();
+        return;
+      }
+      var btn = waitlistForm.querySelector(".hero-waitlist-submit");
+      if (btn) {
+        btn.textContent = "You are in";
+        btn.disabled = true;
+      }
+      input.disabled = true;
+      var ok = document.getElementById("hero-waitlist-success");
+      if (ok) ok.hidden = false;
+    });
+  }
 })();

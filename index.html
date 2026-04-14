@@ -31,23 +31,49 @@
     <main>
       <section class="hero">
         <div class="hero-inner">
-          <p class="eyebrow">Vertical integration potential</p>
-          <h1 class="hero-title">Solve demand in the real world.</h1>
+          <p class="eyebrow">Satisfaction Guaranteed</p>
+          <h1 class="hero-title">
+            <span class="hero-title-lead">You don&rsquo;t make $1 in 30 days</span><br />we refund you 100%
+          </h1>
           <p class="hero-sub">
             We surface urgent problems people already pay to fix—then help vibe coders
             validate, rank, and ship before the window closes.
           </p>
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="#join">Email us</a>
-            <a class="btn btn-ghost" href="#validate">How validation works</a>
+          <div class="hero-waitlist-wrap">
+            <span class="hero-waitlist-cap hero-waitlist-cap--left" aria-hidden="true"></span>
+            <form class="hero-waitlist" id="hero-waitlist-form" action="#" method="post" novalidate>
+              <label class="sr-only" for="waitlist-email">Email for waitlist</label>
+              <input
+                type="email"
+                id="waitlist-email"
+                class="waitlist-input"
+                name="email"
+                placeholder="Email address"
+                required
+                autocomplete="email"
+                inputmode="email"
+              />
+              <button type="submit" class="btn btn-primary hero-waitlist-submit">Join waitlist</button>
+            </form>
+            <span class="hero-waitlist-cap hero-waitlist-cap--right" aria-hidden="true"></span>
           </div>
+          <p class="hero-waitlist-note">
+            <span class="hero-waitlist-note-chip">Early Access</span>
+            <span class="hero-waitlist-note-chip hero-waitlist-note-chip--scarcity">
+              <span class="hero-waitlist-note-live" aria-hidden="true"></span>
+              Limited Seats
+            </span>
+          </p>
+          <p class="hero-waitlist-success" id="hero-waitlist-success" role="status" aria-live="polite" hidden>
+            Thanks — you are on the list.
+          </p>
         </div>
         <div class="hero-scroll" aria-hidden="true"></div>
       </section>
 
       <section class="panel panel-light" id="demand">
         <div class="panel-inner">
-          <h2 class="panel-title">Find ideas that already hurt.</h2>
+          <h2 class="panel-title">Find ideas that are already winning.</h2>
           <p class="panel-lead">
             Systematic demand discovery—not vibes. We trace what people search, say, and
             pay for across the open web.
@@ -85,10 +111,9 @@
 
       <section class="panel panel-light" id="ranking">
         <div class="panel-inner">
-          <h2 class="panel-title">Rankings that move builders.</h2>
+          <h2 class="panel-title">Business advisory → Building → Marketing </h2>
           <p class="panel-lead">
-            Fresh market gaps surface on the server. Vibe coders compete or collaborate.
-            Communities submit, vote, and roast—so the best problems float up.
+             Custom business adisory, building plans, and instant marketing distribution to speed up your first dollar.
           </p>
         </div>
       </section>
@@ -106,7 +131,7 @@
 
       <section class="panel panel-light" id="playbook">
         <div class="panel-inner narrow">
-          <h2 class="panel-title">Your playbook against the field.</h2>
+          <h2 class="panel-title">Outsmart your confused competitors</h2>
           <p class="panel-lead">
             Compare competitors, pricing, and positioning. Then connect to the tools you
             already use—or a premium build path when you are ready to go serious.
@@ -119,7 +144,7 @@
           <h2 class="panel-title">Reach buyers, not just dashboards.</h2>
           <p class="panel-lead">
             When it is time to distribute: links to original demand signals, recommended
-            subreddits, and the channels where people already asked for the fix.
+            subreddits, and the channels where people already asked for the fix. With custom made scripts for you.
           </p>
         </div>
       </section>
@@ -143,9 +168,15 @@
             </article>
             <article class="price-card">
               <h3>Unlimited</h3>
-              <p class="price">$19<span class="per">/mo</span></p>
-              <p class="price-alt">or $150/year</p>
+              <p class="price">
+                <del class="price-was">$29</del> $19<span class="per">/mo</span>
+              </p>
               <p class="price-detail">Run every hypothesis without friction.</p>
+            </article>
+            <article class="price-card">
+              <h3>Pro</h3>
+              <p class="price">$49<span class="per">/mo</span></p>
+              <p class="price-detail">Deep validation, know everything about your competitors, and premium build paths for building an empire.</p>
             </article>
           </div>
         </div>
