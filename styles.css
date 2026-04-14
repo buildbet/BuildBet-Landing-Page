@@ -30,6 +30,7 @@ body {
   color: var(--black);
   background: var(--black);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 a {
@@ -59,8 +60,10 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: var(--header-h);
-  padding: 0 clamp(20px, 4vw, 48px);
+  gap: 12px;
+  min-height: calc(var(--header-h) + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) max(clamp(16px, 4vw, 48px), env(safe-area-inset-right, 0px))
+    0 max(clamp(16px, 4vw, 48px), env(safe-area-inset-left, 0px));
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.02em;
@@ -76,6 +79,7 @@ a {
 }
 
 .logo {
+  min-width: 0;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -104,13 +108,21 @@ a {
 }
 
 .header-cta {
+  flex-shrink: 0;
   color: var(--white);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  padding: 8px 16px;
+  padding: 8px 12px;
   border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.25);
   transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+@media (min-width: 400px) {
+  .header-cta {
+    font-size: 13px;
+    padding: 8px 16px;
+  }
 }
 
 .header-cta:hover {
@@ -126,7 +138,10 @@ a {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: calc(var(--header-h) + 48px) clamp(24px, 5vw, 64px) 80px;
+  padding: calc(var(--header-h) + env(safe-area-inset-top, 0px) + 40px)
+    max(clamp(20px, 5vw, 64px), env(safe-area-inset-right, 0px))
+    max(72px, env(safe-area-inset-bottom, 0px))
+    max(clamp(20px, 5vw, 64px), env(safe-area-inset-left, 0px));
   text-align: center;
   background: var(--black);
   color: var(--white);
@@ -147,6 +162,7 @@ a {
 
 .hero-inner {
   position: relative;
+  width: 100%;
   max-width: 920px;
   margin: 0 auto;
 }
@@ -162,10 +178,12 @@ a {
 
 .hero-title {
   margin: 0 0 24px;
-  font-size: clamp(2.25rem, 5vw + 1rem, 4.25rem);
+  font-size: clamp(1.65rem, 6vw + 0.5rem, 4.25rem);
   font-weight: 600;
   line-height: 1.08;
   letter-spacing: -0.03em;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .hero-title-lead {
@@ -176,10 +194,11 @@ a {
 .hero-sub {
   margin: 0 auto 28px;
   max-width: 560px;
-  font-size: clamp(1rem, 2vw, 1.125rem);
+  font-size: clamp(0.9375rem, 2.4vw, 1.125rem);
   font-weight: 400;
   color: var(--gray-400);
   line-height: 1.6;
+  overflow-wrap: break-word;
 }
 
 .hero-waitlist-wrap {
@@ -419,6 +438,7 @@ a {
   color: #f87171;
 }
 
+/* Narrow phones: slightly shorter bar when still horizontal */
 @media (max-width: 380px) {
   .hero-waitlist-wrap {
     --waitlist-h: 54px;
@@ -427,6 +447,45 @@ a {
 
   .hero-waitlist .btn-primary {
     padding: 0 16px;
+  }
+}
+
+/* Stack waitlist on small screens — readable tap targets, no horizontal squeeze */
+@media (max-width: 560px) {
+  .hero-waitlist-wrap {
+    padding: 0;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 10px 32px rgba(0, 0, 0, 0.4))
+      drop-shadow(0 0 40px rgba(61, 105, 225, 0.1));
+  }
+
+  .hero-waitlist-cap {
+    display: none;
+  }
+
+  .hero-waitlist {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .waitlist-input {
+    min-height: 52px;
+    padding: 14px 20px;
+    font-size: 16px; /* avoids iOS zoom on focus */
+    text-align: center;
+  }
+
+  .hero-waitlist .btn-primary {
+    width: 100%;
+    min-height: 52px;
+    padding: 14px 24px;
+    border-left: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 0;
+    font-size: 15px;
   }
 }
 
@@ -482,7 +541,8 @@ a {
 
 /* Panels */
 .panel {
-  padding: clamp(72px, 12vh, 120px) clamp(24px, 5vw, 64px);
+  padding: clamp(56px, 10vh, 120px) max(clamp(20px, 5vw, 64px), env(safe-area-inset-right, 0px))
+    clamp(56px, 10vh, 120px) max(clamp(20px, 5vw, 64px), env(safe-area-inset-left, 0px));
 }
 
 .panel-inner {
@@ -511,10 +571,11 @@ a {
 
 .panel-title {
   margin: 0 0 20px;
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-size: clamp(1.45rem, 4.5vw + 0.5rem, 2.5rem);
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.15;
+  overflow-wrap: break-word;
 }
 
 .panel-light .panel-title {
@@ -523,9 +584,10 @@ a {
 
 .panel-lead {
   margin: 0;
-  font-size: clamp(1rem, 2vw, 1.125rem);
+  font-size: clamp(0.9375rem, 2.2vw, 1.125rem);
   line-height: 1.65;
   color: var(--gray-600);
+  overflow-wrap: break-word;
 }
 
 .panel-dark .panel-lead,
@@ -590,7 +652,7 @@ a {
 }
 
 .price-card {
-  padding: 32px 28px;
+  padding: clamp(24px, 5vw, 32px) clamp(20px, 4vw, 28px);
   border-radius: 8px;
   border: 1px solid var(--gray-100);
   background: var(--white);
@@ -618,9 +680,10 @@ a {
 
 .price {
   margin: 0 0 8px;
-  font-size: 2rem;
+  font-size: clamp(1.65rem, 5vw, 2rem);
   font-weight: 600;
   letter-spacing: -0.02em;
+  overflow-wrap: break-word;
 }
 
 .price .per {
@@ -656,7 +719,7 @@ a {
   background: linear-gradient(180deg, #0d0d0d 0%, #111 100%);
   color: var(--white);
   text-align: center;
-  padding-bottom: clamp(80px, 14vh, 140px);
+  padding-bottom: max(clamp(72px, 12vh, 140px), env(safe-area-inset-bottom, 0px));
 }
 
 .panel-cta .panel-title,
@@ -671,19 +734,33 @@ a {
 
 .email-cta {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
   justify-content: center;
-  gap: 16px 20px;
+  gap: 14px;
   max-width: 640px;
   margin: 0 auto;
+  padding: 0 4px;
+}
+
+@media (min-width: 480px) {
+  .email-cta {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 20px;
+    padding: 0;
+  }
 }
 
 .email-link {
-  font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+  display: inline-block;
+  max-width: 100%;
+  font-size: clamp(0.875rem, 3.2vw, 1.05rem);
   font-weight: 500;
   color: var(--white);
-  word-break: break-all;
+  overflow-wrap: anywhere;
   text-decoration: underline;
   text-decoration-color: rgba(255, 255, 255, 0.35);
   text-underline-offset: 4px;
@@ -697,8 +774,16 @@ a {
 
 .email-cta .btn-primary {
   flex: 0 0 auto;
+  width: 100%;
+  min-height: 48px;
   background: var(--accent);
   color: var(--white);
+}
+
+@media (min-width: 480px) {
+  .email-cta .btn-primary {
+    width: auto;
+  }
 }
 
 .email-cta .btn-primary:hover:not(:disabled) {
@@ -726,7 +811,8 @@ a {
   gap: 12px 24px;
   justify-content: space-between;
   align-items: center;
-  padding: 24px clamp(24px, 5vw, 64px) 32px;
+  padding: 24px max(clamp(20px, 5vw, 64px), env(safe-area-inset-right, 0px))
+    max(28px, env(safe-area-inset-bottom, 0px)) max(clamp(20px, 5vw, 64px), env(safe-area-inset-left, 0px));
   font-size: 12px;
   color: var(--gray-500);
   background: #0a0a0a;
