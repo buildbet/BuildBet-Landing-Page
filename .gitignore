@@ -1,2 +1,2 @@
 .env
-supabase-env.js
+# supabase-env.js is committed so static hosts (e.g. GitHub Pages) can load the anon key. Never put service_role here.
