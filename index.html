@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BuildBet — Real demand. Real builders.</title>
+    <meta
+      name="description"
+      content="Scan market demand, validate ideas, and ship with a community of vibe coders. BuildBet pushes the world forward."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header" id="header">
+      <a class="logo" href="#">BuildBet</a>
+      <nav class="nav">
+        <a href="#demand">Demand</a>
+        <a href="#validate">Validate</a>
+        <a href="#community">Community</a>
+        <a href="#pricing">Pricing</a>
+      </nav>
+      <a class="header-cta" href="#join">Contact</a>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-inner">
+          <p class="eyebrow">Early Access</p>
+          <h1 class="hero-title">
+            <span class="hero-title-lead">You don&rsquo;t make $1 in 30 days</span><br />we refund you 100%
+          </h1>
+          <p class="hero-sub">
+            We surface urgent problems people already pay to fix—then help vibe coders
+            validate, rank, and ship before the window closes.
+          </p>
+          <div class="hero-waitlist-wrap">
+            <span class="hero-waitlist-cap hero-waitlist-cap--left" aria-hidden="true"></span>
+            <form class="hero-waitlist" id="hero-waitlist-form" action="#" method="post" novalidate>
+              <label class="sr-only" for="waitlist-email">Email for waitlist</label>
+              <input
+                type="email"
+                id="waitlist-email"
+                class="waitlist-input"
+                name="email"
+                placeholder="Email address"
+                required
+                autocomplete="email"
+                inputmode="email"
+              />
+              <button type="submit" class="btn btn-primary hero-waitlist-submit">Join waitlist</button>
+            </form>
+            <span class="hero-waitlist-cap hero-waitlist-cap--right" aria-hidden="true"></span>
+          </div>
+          <p class="hero-waitlist-note">
+            <span class="hero-waitlist-note-chip">Early Access</span>
+            <span class="hero-waitlist-note-chip hero-waitlist-note-chip--scarcity">
+              <span class="hero-waitlist-note-live" aria-hidden="true"></span>
+              Limited Seats
+            </span>
+          </p>
+          <p class="hero-waitlist-success" id="hero-waitlist-success" role="status" aria-live="polite" hidden>
+            Thanks — you are on the list.
+          </p>
+        </div>
+        <div class="hero-scroll" aria-hidden="true"></div>
+      </section>
+
+      <section class="panel panel-light" id="demand">
+        <div class="panel-inner">
+          <h2 class="panel-title">Find ideas that are already winning.</h2>
+          <p class="panel-lead">
+            Systematic demand discovery—not vibes. We trace what people search, say, and
+            pay for across the open web.
+          </p>
+          <ul class="feature-grid">
+            <li>
+              <span class="feature-label">Sources</span>
+              <p>Search, trends, Reddit, YouTube, reviews, app stores, and more—mapped to categories like healthcare, safety, and gaming.</p>
+            </li>
+            <li>
+              <span class="feature-label">What 10/10 means</span>
+              <p>Demand certainty, pain intensity, monetization path, accessibility, and whether you can sell before you build.</p>
+            </li>
+            <li>
+              <span class="feature-label">Your lens</span>
+              <p>Sort by purpose-first or money-first. Same pipeline—different priorities.</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel panel-dark" id="validate">
+        <div class="panel-inner narrow">
+          <h2 class="panel-title">Validate with confidence.</h2>
+          <p class="panel-lead">
+            Drop in your own idea. BuildBet runs a structured validation flow and returns a
+            confidence score—so you bet on evidence, not hope alone.
+          </p>
+          <p class="panel-note">
+            One free analysis. Then pay per idea or go unlimited—built for builders who test
+            fast and iterate.
+          </p>
+        </div>
+      </section>
+
+      <section class="panel panel-light" id="ranking">
+        <div class="panel-inner">
+          <h2 class="panel-title">Business advisory → Building → Marketing </h2>
+          <p class="panel-lead">
+             Custom business adisory, building plans, and instant marketing distribution to speed up your first dollar.
+          </p>
+        </div>
+      </section>
+
+      <section class="panel panel-mid" id="community">
+        <div class="panel-inner">
+          <h2 class="panel-title">A community built to ship.</h2>
+          <p class="panel-lead">
+            Feature suggestions, instant testers, challenges, and honest feedback. From
+            “first user” races to “I bet you can’t ship this in 24 hours”—momentum beats
+            perfection.
+          </p>
+        </div>
+      </section>
+
+      <section class="panel panel-light" id="playbook">
+        <div class="panel-inner narrow">
+          <h2 class="panel-title">Outsmart your confused competitors</h2>
+          <p class="panel-lead">
+            Compare competitors, pricing, and positioning. Then connect to the tools you
+            already use—or a premium build path when you are ready to go serious.
+          </p>
+        </div>
+      </section>
+
+      <section class="panel panel-dark" id="distribution">
+        <div class="panel-inner">
+          <h2 class="panel-title">Reach buyers, not just dashboards.</h2>
+          <p class="panel-lead">
+            When it is time to distribute: links to original demand signals, recommended
+            subreddits, and the channels where people already asked for the fix.
+          </p>
+        </div>
+      </section>
+
+      <section class="panel panel-pricing panel-light" id="pricing">
+        <div class="panel-inner">
+          <h2 class="panel-title">Simple bets. Clear upside.</h2>
+          <p class="panel-lead pricing-intro">
+            Gambling mindset, disciplined process: one free test, then scale how you think.
+          </p>
+          <div class="pricing-cards">
+            <article class="price-card">
+              <h3>Try</h3>
+              <p class="price">Free</p>
+              <p class="price-detail">First idea analysis — core criteria only.</p>
+            </article>
+            <article class="price-card featured">
+              <h3>Single</h3>
+              <p class="price">$5</p>
+              <p class="price-detail">Per idea deep validation.</p>
+            </article>
+            <article class="price-card">
+              <h3>Unlimited</h3>
+              <p class="price">
+                <del class="price-was">$29</del> $19<span class="per">/mo</span>
+              </p>
+              <p class="price-detail">Run every hypothesis without friction.</p>
+            </article>
+            <article class="price-card">
+              <h3>Pro</h3>
+              <p class="price">$49<span class="per">/mo</span></p>
+              <p class="price-detail">Deep validation, know everything about your competitors, and premium build paths for building an empire.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel panel-cta" id="join">
+        <div class="panel-inner narrow">
+          <h2 class="panel-title">The last crowded gold rush needs pickaxes.</h2>
+          <p class="panel-lead">
+            AGI compresses timelines. BuildBet stays relevant by matching supply to demand
+            —today and after the job market shifts.
+          </p>
+          <div class="email-cta">
+            <a class="email-link" href="mailto:buildbet.official@gmail.com">buildbet.official@gmail.com</a>
+            <button
+              type="button"
+              class="btn btn-primary copy-email-btn"
+              data-email="buildbet.official@gmail.com"
+              aria-label="Copy email address to clipboard"
+            >
+              Copy email
+            </button>
+          </div>
+          <p class="fineprint">
+            Market-gap digests, challenge drops, and builder stories—reach out anytime.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>© BuildBet</span>
+      <span class="footer-tag">DemandRush · build2win</span>
+    </footer>
+
+    <script src="main.js"></script>
+  </body>
+</html>
