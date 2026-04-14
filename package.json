@@ -1,0 +1,7 @@
+{
+  "name": "buildbet-landing-page",
+  "private": true,
+  "scripts": {
+    "env:gen": "node scripts/gen-supabase-env.mjs"
+  }
+}

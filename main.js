@@ -1,4 +1,8 @@
 (function () {
+  var cfg = window.__BUILDBET_SUPABASE || {};
+  var SUPABASE_URL = cfg.url || "";
+  var SUPABASE_ANON_KEY = cfg.anonKey || "";
+
   var header = document.getElementById("header");
   if (header) {
     function onScroll() {
@@ -52,6 +56,102 @@
     document.body.removeChild(ta);
   }
 
+  function waitlistConfigured() {
+    return !!(SUPABASE_URL && SUPABASE_ANON_KEY);
+  }
+
+  function normalizeEmail(raw) {
+    return String(raw || "")
+      .trim()
+      .toLowerCase();
+  }
+
+  function waitlistFailureMessage(status, pgCode) {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      return "You appear to be offline. Reconnect and try again.";
+    }
+    if (status === 401) {
+      return "Signup was rejected. Check your Supabase URL and anon key in .env, run npm run env:gen, and refresh.";
+    }
+    if (status === 403 || pgCode === "42501") {
+      return "Signup was blocked. In Supabase, allow insert on waitlist_signups for the anon role (see supabase-waitlist.sql).";
+    }
+    if (status === 404) {
+      return "Waitlist table was not found. Create waitlist_signups in Supabase (see supabase-waitlist.sql).";
+    }
+    if (status >= 500) {
+      return "The signup service had a problem. Try again in a few minutes.";
+    }
+    return "We could not add you to the waitlist. Please try again.";
+  }
+
+  function waitlistInsert(email) {
+    var base = String(SUPABASE_URL).replace(/\/+$/, "");
+    return fetch(base + "/rest/v1/waitlist_signups", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: "Bearer " + SUPABASE_ANON_KEY,
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify({ email: email }),
+    })
+      .then(function (res) {
+        if (res.ok || res.status === 201 || res.status === 204) {
+          return { ok: true };
+        }
+        return res.text().then(function (text) {
+          var code;
+          try {
+            var j = JSON.parse(text);
+            if (j && j.code != null) code = String(j.code);
+            if (!code && Array.isArray(j) && j[0] && j[0].code != null) {
+              code = String(j[0].code);
+            }
+          } catch (err) {
+            /* ignore */
+          }
+          if (res.status === 409 || code === "23505") {
+            return { ok: true, duplicate: true };
+          }
+          return {
+            ok: false,
+            message: waitlistFailureMessage(res.status, code),
+          };
+        });
+      })
+      .catch(function () {
+        return {
+          ok: false,
+          message:
+            "We could not reach the signup server. Check your connection and try again.",
+        };
+      });
+  }
+
+  function waitlistShowFailure(waitlistForm, btn, input, errEl, message) {
+    if (waitlistForm) waitlistForm.classList.add("is-error");
+    if (btn) {
+      btn.textContent = "Try again";
+      btn.disabled = false;
+      btn.setAttribute("aria-describedby", "hero-waitlist-error");
+    }
+    if (input) input.disabled = false;
+    if (errEl) {
+      errEl.textContent = message;
+      errEl.hidden = false;
+      if (typeof errEl.scrollIntoView === "function") {
+        errEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+  }
+
+  function waitlistClearFailure(waitlistForm, btn) {
+    if (waitlistForm) waitlistForm.classList.remove("is-error");
+    if (btn) btn.removeAttribute("aria-describedby");
+  }
+
   var waitlistForm = document.getElementById("hero-waitlist-form");
   if (waitlistForm) {
     waitlistForm.addEventListener("submit", function (e) {
@@ -62,14 +162,50 @@
         input.reportValidity();
         return;
       }
+      var email = normalizeEmail(input.value);
       var btn = waitlistForm.querySelector(".hero-waitlist-submit");
+      var okEl = document.getElementById("hero-waitlist-success");
+      var errEl = document.getElementById("hero-waitlist-error");
+      waitlistClearFailure(waitlistForm, btn);
+      if (okEl) okEl.hidden = true;
+      if (errEl) {
+        errEl.hidden = true;
+        errEl.textContent = "";
+      }
+
+      if (!waitlistConfigured()) {
+        waitlistShowFailure(
+          waitlistForm,
+          btn,
+          input,
+          errEl,
+          "Waitlist is not connected. Add SUPABASE_URL and SUPABASE_ANON_KEY to .env, run npm run env:gen, and refresh this page."
+        );
+        return;
+      }
+
       if (btn) {
-        btn.textContent = "You are in";
+        btn.textContent = "Joining…";
         btn.disabled = true;
       }
-      input.disabled = true;
-      var ok = document.getElementById("hero-waitlist-success");
-      if (ok) ok.hidden = false;
+      if (input) input.disabled = true;
+
+      waitlistInsert(email).then(function (result) {
+        if (result && result.ok) {
+          waitlistClearFailure(waitlistForm, btn);
+          if (btn) {
+            btn.textContent = "You are in";
+            btn.disabled = true;
+          }
+          if (input) input.disabled = true;
+          if (okEl) okEl.hidden = false;
+          return;
+        }
+        var msg =
+          (result && result.message) ||
+          "We could not add you to the waitlist. Please try again.";
+        waitlistShowFailure(waitlistForm, btn, input, errEl, msg);
+      });
     });
   }
 })();
