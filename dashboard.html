@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>BuildBet — Waitlist</title>
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
+  <body>
+    <header class="dash-header">
+      <a class="dash-logo" href="index.html">BuildBet</a>
+      <nav class="dash-nav">
+        <a href="index.html" class="dash-nav-link">Back to site</a>
+      </nav>
+    </header>
+
+    <main class="dash-main">
+      <section class="dash-hero" aria-labelledby="dash-title">
+        <p class="dash-eyebrow">Waitlist</p>
+        <h1 id="dash-title" class="dash-title">Momentum, measured.</h1>
+        <p class="dash-lead">
+          Live signups from Supabase. Totals and growth are aggregate-only — emails stay private.
+        </p>
+      </section>
+
+      <section class="dash-stat" aria-labelledby="stat-label">
+        <p id="stat-label" class="dash-stat-label">Signups in selected period</p>
+        <p class="dash-stat-value" id="waitlist-total" aria-live="polite">—</p>
+        <p class="dash-stat-meta" id="waitlist-alltime" hidden></p>
+        <p class="dash-stat-meta dash-stat-meta--secondary" id="waitlist-updated" hidden></p>
+      </section>
+
+      <section class="dash-chart-wrap" aria-labelledby="chart-title">
+        <div class="dash-chart-toolbar">
+          <div class="dash-range" role="group" aria-label="Chart time range">
+            <button type="button" class="dash-range-btn" data-days="1">1 day</button>
+            <button type="button" class="dash-range-btn" data-days="3">3 days</button>
+            <button type="button" class="dash-range-btn is-active" data-days="7">7 days</button>
+          </div>
+        </div>
+        <div class="dash-chart-head">
+          <h2 id="chart-title" class="dash-chart-title">Cumulative signups</h2>
+          <p class="dash-chart-sub" id="chart-granularity">UTC · hourly buckets · last 7 days</p>
+        </div>
+        <div class="dash-chart-canvas-wrap">
+          <canvas id="waitlist-chart" aria-label="Cumulative waitlist signups over time"></canvas>
+        </div>
+      </section>
+
+      <p class="dash-error" id="dash-error" role="alert" hidden></p>
+    </main>
+
+    <footer class="dash-footer">
+      <span>BuildBet</span>
+      <span class="dash-footer-dot" aria-hidden="true"></span>
+      <span>DemandRush</span>
+    </footer>
+
+    <script src="supabase-env.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="dashboard.js"></script>
+  </body>
+</html>
