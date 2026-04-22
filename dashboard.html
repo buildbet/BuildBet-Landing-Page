@@ -14,66 +14,88 @@
     <link rel="stylesheet" href="dashboard.css" />
   </head>
   <body>
-    <header class="dash-header">
-      <a class="dash-logo" href="index.html">BuildBet</a>
-      <nav class="dash-nav">
-        <a href="index.html" class="dash-nav-link">Back to site</a>
-      </nav>
-    </header>
+    <div class="dash-shell">
+      <header class="dash-header">
+        <a class="dash-logo" href="index.html">BuildBet</a>
+        <nav class="dash-nav">
+          <a href="index.html" class="dash-nav-link">Back to site</a>
+        </nav>
+      </header>
 
-    <main class="dash-main">
-      <section class="dash-hero" aria-labelledby="dash-title">
-        <p class="dash-eyebrow">Waitlist</p>
-        <h1 id="dash-title" class="dash-title">Momentum, measured.</h1>
-        <p class="dash-lead">
-          Live signups and traffic from Supabase. Totals and growth are aggregate-only — emails stay private.
-        </p>
-      </section>
+      <main class="dash-main">
+        <section class="dash-hero dash-panel" aria-labelledby="dash-title">
+          <p class="dash-eyebrow">Developer Dashboard</p>
+          <h1 id="dash-title" class="dash-title">Momentum, beautifully visualized.</h1>
+          <p class="dash-lead">
+            Live signups and traffic from Supabase in a clean, modern command center. Totals and growth are aggregate-only.
+          </p>
+        </section>
 
-      <section class="dash-stat" aria-labelledby="stat-label">
-        <p id="stat-label" class="dash-stat-label">Signups in selected period</p>
-        <p class="dash-stat-value" id="waitlist-total" aria-live="polite">—</p>
-        <p class="dash-stat-meta" id="waitlist-alltime" hidden></p>
-        <p class="dash-stat-meta dash-stat-meta--secondary" id="waitlist-updated" hidden></p>
-      </section>
+        <section class="dash-kpi-grid" aria-label="Key metrics">
+          <article class="dash-panel dash-stat" aria-labelledby="stat-label">
+            <p id="stat-label" class="dash-stat-label">Signups in selected period</p>
+            <p class="dash-stat-value" id="waitlist-total" aria-live="polite">—</p>
+            <p class="dash-stat-meta" id="waitlist-alltime" hidden></p>
+            <p class="dash-stat-meta dash-stat-meta--secondary" id="waitlist-updated" hidden></p>
+          </article>
 
-      <section class="dash-traffic" aria-labelledby="traffic-label">
-        <p id="traffic-label" class="dash-stat-label">Incoming traffic in selected period</p>
-        <p class="dash-traffic-value" id="traffic-total" aria-live="polite">—</p>
-        <p class="dash-stat-meta dash-stat-meta--secondary" id="traffic-updated" hidden></p>
-        <div class="dash-traffic-log-wrap">
-          <h2 class="dash-chart-title">Recent traffic times (UTC)</h2>
-          <ul class="dash-traffic-log" id="traffic-log"></ul>
-          <p class="dash-traffic-empty" id="traffic-empty" hidden>No traffic recorded in this range yet.</p>
-        </div>
-      </section>
+          <article class="dash-panel dash-traffic" aria-labelledby="traffic-label">
+            <p id="traffic-label" class="dash-stat-label">Incoming traffic in selected period</p>
+            <p class="dash-traffic-value" id="traffic-total" aria-live="polite">—</p>
+            <p class="dash-stat-meta dash-stat-meta--secondary" id="traffic-updated" hidden></p>
+            <div class="dash-traffic-log-wrap">
+              <h2 class="dash-chart-title">Recent traffic times (UTC)</h2>
+              <ul class="dash-traffic-log" id="traffic-log"></ul>
+              <p class="dash-traffic-empty" id="traffic-empty" hidden>No traffic recorded in this range yet.</p>
+            </div>
+          </article>
+        </section>
 
-      <section class="dash-chart-wrap" aria-labelledby="chart-title">
-        <div class="dash-chart-toolbar">
-          <div class="dash-range" role="group" aria-label="Chart time range">
-            <button type="button" class="dash-range-btn" data-days="1">1 day</button>
-            <button type="button" class="dash-range-btn" data-days="3">3 days</button>
-            <button type="button" class="dash-range-btn is-active" data-days="7">7 days</button>
-            <button type="button" class="dash-range-btn" data-days="30">30 days</button>
+        <section class="dash-chart-wrap dash-panel" aria-labelledby="chart-title">
+          <div class="dash-chart-toolbar">
+            <div class="dash-range" role="group" aria-label="Chart time range">
+              <button type="button" class="dash-range-btn" data-days="1">1 day</button>
+              <button type="button" class="dash-range-btn" data-days="3">3 days</button>
+              <button type="button" class="dash-range-btn is-active" data-days="7">7 days</button>
+              <button type="button" class="dash-range-btn" data-days="30">30 days</button>
+            </div>
           </div>
-        </div>
-        <div class="dash-chart-head">
-          <h2 id="chart-title" class="dash-chart-title">Cumulative signups</h2>
-          <p class="dash-chart-sub" id="chart-granularity">UTC · hourly buckets · last 7 days</p>
-        </div>
-        <div class="dash-chart-canvas-wrap">
-          <canvas id="waitlist-chart" aria-label="Cumulative waitlist signups over time"></canvas>
-        </div>
-      </section>
+          <div class="dash-chart-head">
+            <h2 id="chart-title" class="dash-chart-title">Cumulative signups</h2>
+            <p class="dash-chart-sub" id="chart-granularity">UTC · hourly buckets · last 7 days</p>
+          </div>
+          <div class="dash-chart-canvas-wrap">
+            <canvas id="waitlist-chart" aria-label="Cumulative waitlist signups over time"></canvas>
+          </div>
+        </section>
 
-      <p class="dash-error" id="dash-error" role="alert" hidden></p>
-    </main>
+        <section class="dash-chart-wrap dash-chart-wrap--secondary dash-panel" aria-labelledby="traffic-chart-title">
+          <div class="dash-chart-toolbar">
+            <div class="dash-range" role="group" aria-label="Traffic chart time range">
+              <button type="button" class="dash-range-btn" data-days="1">1 day</button>
+              <button type="button" class="dash-range-btn" data-days="3">3 days</button>
+              <button type="button" class="dash-range-btn is-active" data-days="7">7 days</button>
+              <button type="button" class="dash-range-btn" data-days="30">30 days</button>
+            </div>
+          </div>
+          <div class="dash-chart-head">
+            <h2 id="traffic-chart-title" class="dash-chart-title">Traffic views</h2>
+            <p class="dash-chart-sub" id="traffic-chart-granularity">UTC · hourly buckets · last 7 days</p>
+          </div>
+          <div class="dash-chart-canvas-wrap">
+            <canvas id="traffic-chart" aria-label="Traffic views over time"></canvas>
+          </div>
+        </section>
 
-    <footer class="dash-footer">
-      <span>BuildBet</span>
-      <span class="dash-footer-dot" aria-hidden="true"></span>
-      <span>DemandRush</span>
-    </footer>
+        <p class="dash-error" id="dash-error" role="alert" hidden></p>
+      </main>
+
+      <footer class="dash-footer">
+        <span>BuildBet</span>
+        <span class="dash-footer-dot" aria-hidden="true"></span>
+        <span>DemandRush</span>
+      </footer>
+    </div>
 
     <script src="supabase-env.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>

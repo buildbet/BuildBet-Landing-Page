@@ -82,24 +82,94 @@
     return !!(SUPABASE_URL && SUPABASE_ANON_KEY);
   }
 
-  function trackIncomingTraffic() {
-    if (!waitlistConfigured()) return;
+  function formatCount(n) {
+    return Number(n || 0).toLocaleString();
+  }
+
+  function fetchWaitlistCount() {
+    var countEl = document.getElementById("hero-waitlist-count");
+    if (!countEl) return Promise.resolve();
+    if (!waitlistConfigured()) {
+      countEl.textContent = "Waitlist count unavailable";
+      return Promise.resolve();
+    }
     var base = String(SUPABASE_URL).replace(/\/+$/, "");
-    fetch(base + "/rest/v1/traffic_events", {
+    return fetch(base + "/rest/v1/rpc/waitlist_dashboard_stats", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         apikey: SUPABASE_ANON_KEY,
         Authorization: "Bearer " + SUPABASE_ANON_KEY,
-        Prefer: "return=minimal",
       },
-      body: JSON.stringify({
-        path: window.location.pathname || "/",
-      }),
-      keepalive: true,
-    }).catch(function () {
-      /* traffic logging is best-effort and must not block UX */
+      body: JSON.stringify({ p_days: 1 }),
+      cache: "no-store",
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error("waitlist count request failed");
+        return res.json();
+      })
+      .then(function (data) {
+        var total = data && data.all_time_total != null ? Number(data.all_time_total) : 0;
+        countEl.textContent = formatCount(total) + " people already waitlisted";
+      })
+      .catch(function () {
+        countEl.textContent = "Waitlist count unavailable";
+      });
+  }
+
+  function trackIncomingTraffic() {
+    if (!waitlistConfigured()) return;
+    var base = String(SUPABASE_URL).replace(/\/+$/, "");
+    var payload = JSON.stringify({
+      path: window.location.pathname || "/",
     });
+    var attempt = 0;
+    var maxAttempts = 3;
+
+    function send() {
+      attempt += 1;
+      return fetch(base + "/rest/v1/traffic_events", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: "Bearer " + SUPABASE_ANON_KEY,
+          Prefer: "return=minimal",
+        },
+        body: payload,
+        keepalive: true,
+        cache: "no-store",
+      })
+        .then(function (res) {
+          if (res.ok || res.status === 201 || res.status === 204) {
+            return;
+          }
+          return res.text().then(function (text) {
+            if (attempt < maxAttempts) {
+              return new Promise(function (resolve) {
+                window.setTimeout(resolve, attempt * 900);
+              }).then(send);
+            }
+            if (typeof console !== "undefined" && console.warn) {
+              console.warn(
+                "Traffic event insert failed:",
+                res.status,
+                (text || "").slice(0, 180)
+              );
+            }
+          });
+        })
+        .catch(function () {
+          if (attempt < maxAttempts) {
+            return new Promise(function (resolve) {
+              window.setTimeout(resolve, attempt * 900);
+            }).then(send);
+          }
+          /* traffic logging is best-effort and must not block UX */
+        });
+    }
+
+    send();
   }
 
   function normalizeEmail(raw) {
@@ -196,6 +266,7 @@
 
   var waitlistForm = document.getElementById("hero-waitlist-form");
   trackIncomingTraffic();
+  fetchWaitlistCount();
   if (waitlistForm) {
     waitlistForm.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -242,6 +313,7 @@
           }
           if (input) input.disabled = true;
           if (okEl) okEl.hidden = false;
+          fetchWaitlistCount();
           return;
         }
         var msg =

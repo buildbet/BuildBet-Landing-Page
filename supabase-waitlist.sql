@@ -9,16 +9,19 @@ create table if not exists public.waitlist_signups (
 );
 
 alter table public.waitlist_signups enable row level security;
+grant usage on schema public to anon, authenticated;
 
 grant insert on table public.waitlist_signups to anon;
 
 -- Public landing page: anyone may add an email; no public reads.
+drop policy if exists "waitlist_insert_anon" on public.waitlist_signups;
 create policy "waitlist_insert_anon"
   on public.waitlist_signups
   for insert
   to anon
   with check (true);
 
+drop policy if exists "waitlist_no_select_anon" on public.waitlist_signups;
 create policy "waitlist_no_select_anon"
   on public.waitlist_signups
   for select
@@ -66,6 +69,7 @@ declare
   total_w bigint;
   total_traffic bigint;
   series jsonb;
+  traffic_series jsonb;
   traffic_times jsonb;
   start_ts timestamptz;
   end_ts timestamptz;
@@ -106,6 +110,34 @@ begin
 
   select coalesce(
     (
+      select jsonb_agg(
+        jsonb_build_object(
+          't', sub.bucket_start,
+          'count', sub.cnt
+        )
+        order by sub.bucket_start
+      )
+      from (
+        select
+          gs.bucket_start,
+          coalesce(c.cnt, 0)::bigint as cnt
+        from generate_series(start_ts, end_ts, interval '1 hour') as gs(bucket_start)
+        left join (
+          select
+            date_trunc('hour', t.created_at) as bucket_start,
+            count(*)::bigint as cnt
+          from public.traffic_events t
+          where t.created_at >= start_ts
+            and t.created_at < end_ts + interval '1 hour'
+          group by 1
+        ) c on c.bucket_start = gs.bucket_start
+      ) sub
+    ),
+    '[]'::jsonb
+  ) into traffic_series;
+
+  select coalesce(
+    (
       select jsonb_agg(t.created_at order by t.created_at desc)
       from (
         select created_at
@@ -123,6 +155,7 @@ begin
     'all_time_total', coalesce((select count(*)::bigint from public.waitlist_signups), 0),
     'traffic_total', coalesce(total_traffic, 0),
     'traffic_times', coalesce(traffic_times, '[]'::jsonb),
+    'traffic_series', coalesce(traffic_series, '[]'::jsonb),
     'granularity', 'hour',
     'days', d,
     'series', coalesce(series, '[]'::jsonb)

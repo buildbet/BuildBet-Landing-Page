@@ -11,11 +11,14 @@
   var trafficLogEl = document.getElementById("traffic-log");
   var trafficEmptyEl = document.getElementById("traffic-empty");
   var granularityEl = document.getElementById("chart-granularity");
+  var trafficGranularityEl = document.getElementById("traffic-chart-granularity");
   var errEl = document.getElementById("dash-error");
-  var canvas = document.getElementById("waitlist-chart");
+  var signupCanvas = document.getElementById("waitlist-chart");
+  var trafficCanvas = document.getElementById("traffic-chart");
   var rangeBtns = document.querySelectorAll(".dash-range-btn");
 
-  var chartInstance = null;
+  var signupChartInstance = null;
+  var trafficChartInstance = null;
   var selectedDays = 7;
 
   function showError(message) {
@@ -87,6 +90,22 @@
     return { labels: labels, values: values, rawTimes: rawTimes };
   }
 
+  function hourlySeries(series) {
+    var labels = [];
+    var values = [];
+    var rawTimes = [];
+    if (!Array.isArray(series)) {
+      return { labels: labels, values: values, rawTimes: rawTimes };
+    }
+    series.forEach(function (row) {
+      if (!row || row.t == null) return;
+      rawTimes.push(row.t);
+      labels.push(formatHourAxis(row.t));
+      values.push(Number(row.count) || 0);
+    });
+    return { labels: labels, values: values, rawTimes: rawTimes };
+  }
+
   function granularityLabel(days) {
     var slice = days === 1 ? "last 24 hours" : "last " + days + " days";
     return "UTC · hourly buckets · " + slice;
@@ -124,16 +143,23 @@
     });
   }
 
-  function destroyChart() {
-    if (chartInstance) {
-      chartInstance.destroy();
-      chartInstance = null;
+  function destroyChart(kind) {
+    if (kind === "signup" && signupChartInstance) {
+      signupChartInstance.destroy();
+      signupChartInstance = null;
+      return;
+    }
+    if (kind === "traffic" && trafficChartInstance) {
+      trafficChartInstance.destroy();
+      trafficChartInstance = null;
     }
   }
 
-  function renderChart(labels, values, rawTimes, selectedDays) {
-    if (typeof Chart === "undefined" || !canvas) return;
-    destroyChart();
+  function renderChart(kind, labels, values, rawTimes, selectedDays) {
+    if (typeof Chart === "undefined") return;
+    var canvas = kind === "traffic" ? trafficCanvas : signupCanvas;
+    if (!canvas) return;
+    destroyChart(kind);
 
     var prefersReduced =
       typeof window.matchMedia === "function" &&
@@ -142,23 +168,24 @@
     var grid = "rgba(255,255,255,0.06)";
     var tick = "rgba(255,255,255,0.35)";
     var maxTicks = selectedDays <= 1 ? 12 : selectedDays <= 3 ? 10 : 8;
+    var isTraffic = kind === "traffic";
 
-    chartInstance = new Chart(canvas, {
+    var nextChart = new Chart(canvas, {
       type: "line",
       data: {
         labels: labels,
         datasets: [
           {
-            label: "Cumulative",
+            label: isTraffic ? "Views" : "Cumulative",
             data: values,
-            borderColor: "rgba(255,255,255,0.9)",
-            backgroundColor: "rgba(232, 33, 39, 0.16)",
+            borderColor: isTraffic ? "rgba(120, 240, 181, 0.95)" : "rgba(166, 182, 255, 0.95)",
+            backgroundColor: isTraffic ? "rgba(73, 198, 147, 0.2)" : "rgba(124, 140, 255, 0.2)",
             borderWidth: 2,
             fill: true,
             tension: 0.25,
             pointRadius: labels.length <= 1 ? 4 : 0,
             pointHoverRadius: 5,
-            pointBackgroundColor: "#fff",
+            pointBackgroundColor: isTraffic ? "#dcffef" : "#dfe5ff",
           },
         ],
       },
@@ -186,7 +213,7 @@
                 return items[0].label || "";
               },
               label: function (item) {
-                return "Cumulative signups: " + item.formattedValue;
+                return (isTraffic ? "Views: " : "Cumulative signups: ") + item.formattedValue;
               },
             },
           },
@@ -214,6 +241,11 @@
         },
       },
     });
+    if (isTraffic) {
+      trafficChartInstance = nextChart;
+    } else {
+      signupChartInstance = nextChart;
+    }
   }
 
   function fetchStats() {
@@ -226,7 +258,8 @@
         alltimeEl.textContent = "";
         alltimeEl.hidden = true;
       }
-      renderChart([], [], [], selectedDays);
+      renderChart("signup", [], [], [], selectedDays);
+      renderChart("traffic", [], [], [], selectedDays);
       return Promise.resolve();
     }
 
@@ -267,6 +300,7 @@
         var trafficTotal =
           data && data.traffic_total != null ? Number(data.traffic_total) : 0;
         var trafficTimes = (data && data.traffic_times) || [];
+        var trafficSeries = (data && data.traffic_series) || [];
         var series = (data && data.series) || [];
 
         if (totalEl) {
@@ -296,9 +330,14 @@
         if (granularityEl) {
           granularityEl.textContent = granularityLabel(selectedDays);
         }
+        if (trafficGranularityEl) {
+          trafficGranularityEl.textContent = granularityLabel(selectedDays);
+        }
 
         var cum = cumulativeSeries(series);
-        renderChart(cum.labels, cum.values, cum.rawTimes, selectedDays);
+        var trafficHourly = hourlySeries(trafficSeries);
+        renderChart("signup", cum.labels, cum.values, cum.rawTimes, selectedDays);
+        renderChart("traffic", trafficHourly.labels, trafficHourly.values, trafficHourly.rawTimes, selectedDays);
       })
       .catch(function (err) {
         showError(err && err.message ? err.message : "Could not load waitlist stats.");
@@ -315,7 +354,8 @@
           trafficUpdatedEl.hidden = true;
         }
         renderTrafficLog([]);
-        renderChart([], [], [], selectedDays);
+        renderChart("signup", [], [], [], selectedDays);
+        renderChart("traffic", [], [], [], selectedDays);
       });
   }
 
