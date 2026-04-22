@@ -188,6 +188,16 @@ a {
   word-wrap: break-word;
 }
 
+.hero-title-brand {
+  display: block;
+  margin-bottom: 10px;
+  font-size: clamp(0.8125rem, 2vw, 0.9375rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+}
+
 .hero-title-lead {
   font-size: 0.88em;
   font-weight: 500;
