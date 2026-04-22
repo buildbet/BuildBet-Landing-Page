@@ -6,6 +6,10 @@
   var totalEl = document.getElementById("waitlist-total");
   var alltimeEl = document.getElementById("waitlist-alltime");
   var updatedEl = document.getElementById("waitlist-updated");
+  var trafficTotalEl = document.getElementById("traffic-total");
+  var trafficUpdatedEl = document.getElementById("traffic-updated");
+  var trafficLogEl = document.getElementById("traffic-log");
+  var trafficEmptyEl = document.getElementById("traffic-empty");
   var granularityEl = document.getElementById("chart-granularity");
   var errEl = document.getElementById("dash-error");
   var canvas = document.getElementById("waitlist-chart");
@@ -86,6 +90,38 @@
   function granularityLabel(days) {
     var slice = days === 1 ? "last 24 hours" : "last " + days + " days";
     return "UTC · hourly buckets · " + slice;
+  }
+
+  function formatTrafficTimestamp(t) {
+    if (!t) return "";
+    var d = new Date(t);
+    if (isNaN(d.getTime())) return String(t);
+    return d.toLocaleString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZone: "UTC",
+      timeZoneName: "short",
+    });
+  }
+
+  function renderTrafficLog(times) {
+    if (!trafficLogEl) return;
+    trafficLogEl.innerHTML = "";
+    var list = Array.isArray(times) ? times : [];
+    if (!list.length) {
+      if (trafficEmptyEl) trafficEmptyEl.hidden = false;
+      return;
+    }
+    if (trafficEmptyEl) trafficEmptyEl.hidden = true;
+    list.slice(0, 18).forEach(function (t) {
+      var li = document.createElement("li");
+      li.textContent = formatTrafficTimestamp(t);
+      trafficLogEl.appendChild(li);
+    });
   }
 
   function destroyChart() {
@@ -228,6 +264,9 @@
         var total = data && data.total != null ? Number(data.total) : 0;
         var allTime =
           data && data.all_time_total != null ? Number(data.all_time_total) : null;
+        var trafficTotal =
+          data && data.traffic_total != null ? Number(data.traffic_total) : 0;
+        var trafficTimes = (data && data.traffic_times) || [];
         var series = (data && data.series) || [];
 
         if (totalEl) {
@@ -246,6 +285,14 @@
           updatedEl.textContent = "Updated " + new Date().toLocaleString();
           updatedEl.hidden = false;
         }
+        if (trafficTotalEl) {
+          trafficTotalEl.textContent = String(trafficTotal);
+        }
+        if (trafficUpdatedEl) {
+          trafficUpdatedEl.textContent = "Updated " + new Date().toLocaleString();
+          trafficUpdatedEl.hidden = false;
+        }
+        renderTrafficLog(trafficTimes);
         if (granularityEl) {
           granularityEl.textContent = granularityLabel(selectedDays);
         }
@@ -260,6 +307,14 @@
           alltimeEl.textContent = "";
           alltimeEl.hidden = true;
         }
+        if (trafficTotalEl) {
+          trafficTotalEl.textContent = "—";
+        }
+        if (trafficUpdatedEl) {
+          trafficUpdatedEl.textContent = "";
+          trafficUpdatedEl.hidden = true;
+        }
+        renderTrafficLog([]);
         renderChart([], [], [], selectedDays);
       });
   }

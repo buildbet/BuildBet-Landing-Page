@@ -162,6 +162,50 @@ a {
   margin-top: clamp(40px, 7vw, 64px);
 }
 
+.dash-traffic {
+  margin-top: clamp(32px, 6vw, 52px);
+  padding: clamp(24px, 5vw, 36px) 0;
+  border-bottom: 1px solid var(--dash-border);
+}
+
+.dash-traffic-value {
+  margin: 0;
+  font-size: clamp(40px, 8vw, 72px);
+  font-weight: 250;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  color: var(--dash-fg);
+}
+
+.dash-traffic-log-wrap {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid var(--dash-border);
+  background: linear-gradient(180deg, var(--dash-bg-elevated) 0%, var(--dash-bg) 100%);
+}
+
+.dash-traffic-log {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px 14px;
+}
+
+.dash-traffic-log li {
+  font-size: 12px;
+  color: rgba(244, 244, 244, 0.86);
+  letter-spacing: 0.02em;
+}
+
+.dash-traffic-empty {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: var(--dash-muted);
+}
+
 .dash-chart-toolbar {
   margin-bottom: 20px;
 }

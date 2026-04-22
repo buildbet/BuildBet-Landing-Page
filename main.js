@@ -82,6 +82,26 @@
     return !!(SUPABASE_URL && SUPABASE_ANON_KEY);
   }
 
+  function trackIncomingTraffic() {
+    if (!waitlistConfigured()) return;
+    var base = String(SUPABASE_URL).replace(/\/+$/, "");
+    fetch(base + "/rest/v1/traffic_events", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: "Bearer " + SUPABASE_ANON_KEY,
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify({
+        path: window.location.pathname || "/",
+      }),
+      keepalive: true,
+    }).catch(function () {
+      /* traffic logging is best-effort and must not block UX */
+    });
+  }
+
   function normalizeEmail(raw) {
     return String(raw || "")
       .trim()
@@ -175,6 +195,7 @@
   }
 
   var waitlistForm = document.getElementById("hero-waitlist-form");
+  trackIncomingTraffic();
   if (waitlistForm) {
     waitlistForm.addEventListener("submit", function (e) {
       e.preventDefault();

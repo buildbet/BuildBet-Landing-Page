@@ -25,6 +25,30 @@ create policy "waitlist_no_select_anon"
   to anon
   using (false);
 
+create table if not exists public.traffic_events (
+  id uuid primary key default gen_random_uuid(),
+  path text not null default '/',
+  created_at timestamptz not null default now()
+);
+
+alter table public.traffic_events enable row level security;
+
+grant insert on table public.traffic_events to anon;
+
+drop policy if exists "traffic_insert_anon" on public.traffic_events;
+create policy "traffic_insert_anon"
+  on public.traffic_events
+  for insert
+  to anon
+  with check (true);
+
+drop policy if exists "traffic_no_select_anon" on public.traffic_events;
+create policy "traffic_no_select_anon"
+  on public.traffic_events
+  for select
+  to anon
+  using (false);
+
 -- Dashboard (public stats only — no emails). Safe to expose to anon.
 -- p_days: last N days, sliced into one point per hour (dense series; zeros where there were no signups).
 drop function if exists public.waitlist_dashboard_stats();
@@ -40,11 +64,14 @@ declare
   d int := least(greatest(coalesce(p_days, 7), 1), 90);
   win interval := (d::text || ' days')::interval;
   total_w bigint;
+  total_traffic bigint;
   series jsonb;
+  traffic_times jsonb;
   start_ts timestamptz;
   end_ts timestamptz;
 begin
   select count(*)::bigint into total_w from public.waitlist_signups w where w.created_at >= now() - win;
+  select count(*)::bigint into total_traffic from public.traffic_events t where t.created_at >= now() - win;
 
   end_ts := date_trunc('hour', clock_timestamp());
   start_ts := end_ts - win;
@@ -77,9 +104,25 @@ begin
     '[]'::jsonb
   ) into series;
 
+  select coalesce(
+    (
+      select jsonb_agg(t.created_at order by t.created_at desc)
+      from (
+        select created_at
+        from public.traffic_events
+        where created_at >= now() - win
+        order by created_at desc
+        limit 18
+      ) t
+    ),
+    '[]'::jsonb
+  ) into traffic_times;
+
   return jsonb_build_object(
     'total', coalesce(total_w, 0),
     'all_time_total', coalesce((select count(*)::bigint from public.waitlist_signups), 0),
+    'traffic_total', coalesce(total_traffic, 0),
+    'traffic_times', coalesce(traffic_times, '[]'::jsonb),
     'granularity', 'hour',
     'days', d,
     'series', coalesce(series, '[]'::jsonb)
